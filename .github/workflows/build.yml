@@ -6,27 +6,23 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-
     steps:
-    - name: Check out repo
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
-    - name: Build and publish
-      shell: bash
-      run: |
-        dotnet publish PowerSwitcher/PowerSwitcher.csproj \
-          -c Release -r win-x64 \
-          /p:PublishSingleFile=true \
-          /p:SelfContained=false \
+      - name: Publish PowerSwitcher
+        shell: cmd
+        run: >
+          dotnet publish PowerSwitcher\PowerSwitcher.csproj
+          -c Release -r win-x64
           -o output
+          /p:PublishSingleFile=true
+          /p:SelfContained=false
 
-    - name: Upload exe artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: PowerSwitcher
-        path: output/PowerSwitcher.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PowerSwitcher
+          path: output/PowerSwitcher.exe
