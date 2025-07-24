@@ -1,0 +1,30 @@
+name: Build PowerSwitcher
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v3
+
+    - name: Set up .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Build and publish
+      run: dotnet publish PowerSwitcher/PowerSwitcher.csproj ^
+           -c Release -r win-x64 ^
+           /p:PublishSingleFile=true ^
+           /p:SelfContained=false ^
+           -o output
+
+    - name: Upload exe artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PowerSwitcher
+        path: output/PowerSwitcher.exe
