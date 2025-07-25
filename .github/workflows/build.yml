@@ -22,14 +22,11 @@ jobs:
           /p:SelfContained=false
         shell: cmd
 
-      - name: List output folder
-        run: dir /s output
+      - name: Show full output structure
+        run: dir /s
         shell: cmd
-
-      - name: Compress PowerSwitcher.exe to ZIP
-        run: powershell Compress-Archive -Path output\PowerSwitcher.exe -DestinationPath output\PowerSwitcher.zip
 
       - uses: actions/upload-artifact@v4
         with:
-          name: PowerSwitcher
-          path: output/PowerSwitcher.zip
+          name: FullOutput
+          path: output
