@@ -1,6 +1,8 @@
-name: Build PowerSwitcher.TrayApp
+name: Build PowerSwitcher TrayApp
 
 on:
+  push:
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -8,30 +10,34 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
+    - name: Setup .NET Core SDK 9.0.303
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.303
 
-      - name: Publish Tray App
-        run: >
-          dotnet publish PowerSwitcher.TrayApp/PowerSwitcher.TrayApp.csproj
-          -c Release -r win-x64
-          -p:PublishSingleFile=true
-          -p:SelfContained=true
-          -p:IncludeAllContentForSelfExtract=true
-        shell: cmd
+    - name: Install .NET Framework 4.5 Targeting Pack
+      run: |
+        Invoke-WebRequest -Uri "https://download.microsoft.com/download/7/B/6/7B64C3A1-C9BA-4B1D-B3C2-5C2654E8FA7C/NDP45-DevPack-KB2872776-ENU.exe" -OutFile "ndp45.exe"
+        Start-Process .\ndp45.exe -ArgumentList "/quiet" -Wait
 
-      - name: Find all EXE
-        run: dir /s /b PowerSwitcher.TrayApp\bin\Release\*.exe
-        shell: cmd
+    - name: Publish PowerSwitcher.TrayApp
+      run: |
+        dotnet publish PowerSwitcher.TrayApp/PowerSwitcher.TrayApp.csproj `
+          -c Release `
+          -r win-x64 `
+          -p:PublishSingleFile=true `
+          -p:SelfContained=true `
+          -p:IncludeAllContentForSelfExtract=true `
+          -o output
 
-      - name: Archive EXE
-        run: powershell Compress-Archive -Path PowerSwitcher.TrayApp\bin\Release\**\PowerSwitcher.TrayApp.exe -DestinationPath PowerSwitcher.zip
-        shell: pwsh
+    - name: Show output files
+      run: dir /s output
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: PowerSwitcher
-          path: PowerSwitcher.zip
+    - name: Upload EXE Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PowerSwitcher-TrayApp
+        path: output/*.exe
