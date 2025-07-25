@@ -1,3 +1,4 @@
+
 name: Build PowerSwitcher
 
 on:
@@ -21,12 +22,7 @@ jobs:
           -o output
           /p:PublishSingleFile=true
           /p:SelfContained=false
-
-      - name: List output folder
-        run: dir output
-        shell: cmd
-
       - uses: actions/upload-artifact@v4
         with:
           name: PowerSwitcher
-          path: output\PowerSwitcher.exe
+          path: output/PowerSwitcher.exe
