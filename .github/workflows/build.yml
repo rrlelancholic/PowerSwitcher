@@ -13,15 +13,21 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Show current directory and files before publish
+        shell: cmd
+        run: |
+          cd
+          dir
+
       - name: Publish PowerSwitcher
         shell: cmd
         run: |
           cd PowerSwitcher
-          dotnet publish PowerSwitcher.csproj -c Release -r win-x64 -o ..\output /p:PublishSingleFile=true /p:SelfContained=false
+          dotnet publish PowerSwitcher.csproj -c Release -r win-x64 -o "%GITHUB_WORKSPACE%\output" /p:PublishSingleFile=true /p:SelfContained=false
 
-      - name: List output folder
+      - name: Show files in publish folder
         shell: cmd
-        run: dir ..\output
+        run: dir "%GITHUB_WORKSPACE%\output"
 
       - uses: actions/upload-artifact@v4
         with:
