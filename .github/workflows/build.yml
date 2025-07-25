@@ -1,4 +1,4 @@
-name: Build PowerSwitcher
+name: Build PowerSwitcher.TrayApp
 
 on:
   workflow_dispatch:
@@ -8,20 +8,21 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
+      - name: Setup .NET 6 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
 
-    - name: Publish
-      run: |
-        dotnet publish PowerSwitcher.TrayApp/PowerSwitcher.TrayApp.csproj -c Release -r win-x64 -p:PublishSingleFile=true -p:SelfContained=true
+      - name: Restore dependencies
+        run: dotnet restore PowerSwitcher.TrayApp/PowerSwitcher.TrayApp.csproj
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: PowerSwitcher
-        path: PowerSwitcher.TrayApp/bin/Release/net8.0/win-x64/publish/
+      - name: Build and publish
+        run: dotnet publish PowerSwitcher.TrayApp/PowerSwitcher.TrayApp.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o output
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PowerSwitcher-TrayApp
+          path: output/
