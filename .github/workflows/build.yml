@@ -15,18 +15,22 @@ jobs:
 
       - name: Publish PowerSwitcher
         run: >
-          dotnet publish PowerSwitcher\PowerSwitcher.csproj
+          dotnet publish PowerSwitcher/PowerSwitcher.csproj
           -c Release -r win-x64
           -o output
           /p:PublishSingleFile=true
           /p:SelfContained=false
         shell: cmd
 
-      - name: Show full output structure
-        run: dir /s
+      - name: Show output folder structure
+        run: dir /s output
         shell: cmd
+
+      - name: Compress PowerSwitcher.exe into ZIP
+        run: powershell Compress-Archive -Path output\PowerSwitcher.exe -DestinationPath output\PowerSwitcher.zip
+        shell: pwsh
 
       - uses: actions/upload-artifact@v4
         with:
-          name: FullOutput
-          path: output
+          name: PowerSwitcher
+          path: output\PowerSwitcher.zip
