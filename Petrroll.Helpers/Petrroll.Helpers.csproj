@@ -4,15 +4,6 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Petrroll.Helpers</RootNamespace>
     <AssemblyName>Petrroll.Helpers</AssemblyName>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="Configuration.cs" />
-    <Compile Include="LINQ.cs" />
-    <Compile Include="ObservableCollectionWhereShim.cs" />
-    <Compile Include="ObservableObject.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
 
 </Project>
