@@ -11,19 +11,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install .NET Framework 4.5 Developer Pack
-      run: |
-        Invoke-WebRequest -Uri "https://download.visualstudio.microsoft.com/download/pr/5fe6354b-3ce7-48ac-93d2-2bb30e8bb564/e4c3796b3875bdc9f8c39a0577cdaeb0/NDP45-DevPack-KB2872776-ENU.exe" -OutFile "ndp45.exe"
-        Start-Process -Wait -FilePath ".\ndp45.exe" -ArgumentList "/quiet", "/norestart"
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
 
-    - name: Build TrayApp using MSBuild
-      shell: pwsh
+    - name: Publish
       run: |
-        $msbuildPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
-        & $msbuildPath PowerSwitcher.TrayApp/PowerSwitcher.TrayApp.csproj /p:Configuration=Release
+        dotnet publish PowerSwitcher.TrayApp/PowerSwitcher.TrayApp.csproj -c Release -r win-x64 -p:PublishSingleFile=true -p:SelfContained=true
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: PowerSwitcher
-        path: PowerSwitcher.TrayApp\bin\Release\
+        path: PowerSwitcher.TrayApp/bin/Release/net8.0/win-x64/publish/
