@@ -6,6 +6,7 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -17,20 +18,21 @@ jobs:
         run: >
           dotnet publish PowerSwitcher/PowerSwitcher.csproj
           -c Release -r win-x64
-          -o output
-          /p:PublishSingleFile=true
-          /p:SelfContained=false
+          -p:PublishSingleFile=true
+          -p:SelfContained=true
+          -p:IncludeAllContentForSelfExtract=true
         shell: cmd
 
-      - name: Show output folder structure
-        run: dir /s output
+      - name: Find and list all EXE files
+        run: dir /s /b PowerSwitcher\bin\Release\*.exe
         shell: cmd
 
-      - name: Compress PowerSwitcher.exe into ZIP
-        run: powershell Compress-Archive -Path output\PowerSwitcher.exe -DestinationPath output\PowerSwitcher.zip
+      - name: Archive final PowerSwitcher.exe
+        run: powershell Compress-Archive -Path PowerSwitcher\bin\Release\**\PowerSwitcher.exe -DestinationPath PowerSwitcher.zip
         shell: pwsh
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload artifact ZIP
+        uses: actions/upload-artifact@v4
         with:
           name: PowerSwitcher
-          path: output\PowerSwitcher.zip
+          path: PowerSwitcher.zip
